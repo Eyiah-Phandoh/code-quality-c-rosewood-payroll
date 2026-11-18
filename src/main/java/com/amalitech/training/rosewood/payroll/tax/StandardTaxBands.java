@@ -22,8 +22,8 @@ public final class StandardTaxBands {
      */
     public static List<TaxBand> create() {
         return List.of(
-                new PercentageTaxBand("LOW", LOW_UPPER_BOUND, LOW_RATE),
-                new PercentageTaxBand("MEDIUM", MEDIUM_UPPER_BOUND, MEDIUM_RATE),
-                new PercentageTaxBand("HIGH", null, HIGH_RATE));
+                new PercentageTaxBand("LOW_BAND", LOW_UPPER_BOUND, LOW_RATE),
+                new PercentageTaxBand("MEDIUM_BAND", MEDIUM_UPPER_BOUND, MEDIUM_RATE),
+                new PercentageTaxBand("HIGH_BAND", null, HIGH_RATE));
     }
 }
