@@ -27,7 +27,8 @@ All monetary values use `BigDecimal` with a scale of **2** and `HALF_UP` roundin
 
 ```text
 com.amalitech.training.rosewood.payroll
-├── Demo                     composition root and CLI presentation
+├── PayrollApplication       composition root and entry point
+├── Demo                     CLI presentation
 ├── domain                   Employee, PayrollResult
 ├── money                    Money precision policy
 ├── repository               EmployeeRepository, InMemoryEmployeeRepository
@@ -54,7 +55,7 @@ Run the demo:
 
 ```bash
 mvn compile
-java -cp target/classes com.amalitech.training.rosewood.payroll.Demo
+java -cp target/classes com.amalitech.training.rosewood.payroll.PayrollApplication
 ```
 
 Example output:

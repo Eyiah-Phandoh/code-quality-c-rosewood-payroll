@@ -1,19 +1,14 @@
 package com.amalitech.training.rosewood.payroll;
 
-import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.domain.PayrollResult;
 import com.amalitech.training.rosewood.payroll.exception.EmployeeNotFoundException;
 import com.amalitech.training.rosewood.payroll.exception.PayrollException;
-import com.amalitech.training.rosewood.payroll.repository.InMemoryEmployeeRepository;
 import com.amalitech.training.rosewood.payroll.service.PayrollService;
-import com.amalitech.training.rosewood.payroll.service.StandardGrossPayCalculator;
-import com.amalitech.training.rosewood.payroll.tax.BandedTaxCalculator;
-import com.amalitech.training.rosewood.payroll.tax.StandardTaxBands;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 
 /**
- * Small command-line demonstration of the payroll service.
+ * CLI presentation of payroll results. Collaborators are wired by {@link PayrollApplication}.
  */
 public final class Demo {
 
@@ -25,26 +20,10 @@ public final class Demo {
     private Demo() {
     }
 
-    public static void main(String[] args) {
-        run(System.out);
-    }
-
-    static void run(PrintStream output) {
-        run(output, createPayrollService());
-    }
-
     static void run(PrintStream output, PayrollService payrollService) {
         printPayslip(payrollService, "e1", REGULAR_HOURS, REGULAR_HOURLY_RATE, output);
         printPayslip(payrollService, "e2", OVERTIME_HOURS, OVERTIME_HOURLY_RATE, output);
         printPayslip(payrollService, "unknown", REGULAR_HOURS, REGULAR_HOURLY_RATE, output);
-    }
-
-    private static PayrollService createPayrollService() {
-        return new PayrollService(
-                InMemoryEmployeeRepository.withSampleData(),
-                new StandardGrossPayCalculator(),
-                new BandedTaxCalculator(StandardTaxBands.create()),
-                new NoDeductionsCalculator());
     }
 
     private static void printPayslip(

@@ -24,7 +24,7 @@ class DemoTest {
         PrintStream original = System.out;
         try {
             System.setOut(capture);
-            Demo.main(new String[0]);
+            PayrollApplication.main(new String[0]);
         } finally {
             System.setOut(original);
         }
