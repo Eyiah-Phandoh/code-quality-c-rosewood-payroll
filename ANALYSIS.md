@@ -1,12 +1,5 @@
 # Rosewood Payroll — Pre-Refactoring Analysis
 
-**Status:** diagnosis only. No production or test code has been changed.
-**Scope:** the inherited AI-generated net-pay application and its inherited tests.
-**Standards referenced:** `AmaliTech Coding Standards Java Edition.pdf`, cited by section number
-(for example `§6.1`). The standard's SOLID chapter is `§12`.
-
----
-
 ## 1. Baseline: what the inherited application actually does
 
 ### 1.1 Build and test baseline
