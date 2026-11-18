@@ -98,10 +98,10 @@
                 </dependencies>
                 <configuration>
                     <targetClasses>
-                        <param>com.rosewood.payroll.*</param>
+                        <param>com.amalitech.training.rosewood.payroll.*</param>
                     </targetClasses>
                     <targetTests>
-                        <param>com.rosewood.payroll.*</param>
+                        <param>com.amalitech.training.rosewood.payroll.*</param>
                     </targetTests>
                 </configuration>
             </plugin>
