@@ -9,6 +9,7 @@ import com.amalitech.training.rosewood.payroll.exception.TaxCalculationException
 import com.amalitech.training.rosewood.payroll.repository.InMemoryEmployeeRepository;
 import com.amalitech.training.rosewood.payroll.service.PayrollService;
 import com.amalitech.training.rosewood.payroll.service.StandardGrossPayCalculator;
+import com.amalitech.training.rosewood.payroll.support.SampleEmployees;
 import com.amalitech.training.rosewood.payroll.tax.TaxCalculator;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -49,7 +50,7 @@ class DemoTest {
             throw new TaxCalculationException("tax engine offline");
         };
         PayrollService failingService = new PayrollService(
-                InMemoryEmployeeRepository.withSampleData(),
+                new InMemoryEmployeeRepository(SampleEmployees.all()),
                 new StandardGrossPayCalculator(),
                 failingTaxCalculator,
                 new NoDeductionsCalculator());

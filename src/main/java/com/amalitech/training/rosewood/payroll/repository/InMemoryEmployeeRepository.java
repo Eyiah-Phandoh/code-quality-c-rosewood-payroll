@@ -4,12 +4,11 @@ import com.amalitech.training.rosewood.payroll.domain.Employee;
 import com.amalitech.training.rosewood.payroll.exception.EmployeeRepositoryException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * In-memory employee storage used by the demo and integration tests.
+ * In-memory employee storage.
  */
 public final class InMemoryEmployeeRepository implements EmployeeRepository {
 
@@ -30,17 +29,6 @@ public final class InMemoryEmployeeRepository implements EmployeeRepository {
             }
         }
         this.employees = Map.copyOf(employeesById);
-    }
-
-    /**
-     * Creates a repository containing the sample employees used by the demo.
-     *
-     * @return a repository with employees e1 and e2
-     */
-    public static InMemoryEmployeeRepository withSampleData() {
-        return new InMemoryEmployeeRepository(List.of(
-                new Employee("e1", "Efua Sarpong"),
-                new Employee("e2", "Kwame Owusu")));
     }
 
     @Override

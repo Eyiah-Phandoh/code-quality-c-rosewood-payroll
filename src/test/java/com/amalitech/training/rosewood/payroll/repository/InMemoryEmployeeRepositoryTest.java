@@ -8,14 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amalitech.training.rosewood.payroll.domain.Employee;
 import com.amalitech.training.rosewood.payroll.exception.EmployeeRepositoryException;
+import com.amalitech.training.rosewood.payroll.support.SampleEmployees;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class InMemoryEmployeeRepositoryTest {
 
     @Test
-    void findsSampleEmployeeById() {
-        InMemoryEmployeeRepository repository = InMemoryEmployeeRepository.withSampleData();
+    void findsEmployeeById() {
+        InMemoryEmployeeRepository repository = repositoryWithEmployees();
 
         Employee employee = repository.findById("e1").orElseThrow();
 
@@ -26,7 +27,7 @@ class InMemoryEmployeeRepositoryTest {
 
     @Test
     void returnsEmptyForUnknownEmployee() {
-        InMemoryEmployeeRepository repository = InMemoryEmployeeRepository.withSampleData();
+        InMemoryEmployeeRepository repository = repositoryWithEmployees();
 
         assertTrue(repository.findById("unknown").isEmpty());
     }
@@ -66,8 +67,12 @@ class InMemoryEmployeeRepositoryTest {
 
     @Test
     void rejectsNullLookupId() {
-        InMemoryEmployeeRepository repository = InMemoryEmployeeRepository.withSampleData();
+        InMemoryEmployeeRepository repository = repositoryWithEmployees();
 
         assertThrows(EmployeeRepositoryException.class, () -> repository.findById(null));
+    }
+
+    private static InMemoryEmployeeRepository repositoryWithEmployees() {
+        return new InMemoryEmployeeRepository(SampleEmployees.all());
     }
 }

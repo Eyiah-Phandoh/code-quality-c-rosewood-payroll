@@ -8,6 +8,7 @@ import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.domain.PayrollResult;
 import com.amalitech.training.rosewood.payroll.exception.EmployeeNotFoundException;
 import com.amalitech.training.rosewood.payroll.repository.InMemoryEmployeeRepository;
+import com.amalitech.training.rosewood.payroll.support.SampleEmployees;
 import com.amalitech.training.rosewood.payroll.tax.BandedTaxCalculator;
 import com.amalitech.training.rosewood.payroll.tax.StandardTaxBands;
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ class PayrollIntegrationTest {
     @BeforeEach
     void setUp() {
         payrollService = new PayrollService(
-                InMemoryEmployeeRepository.withSampleData(),
+                new InMemoryEmployeeRepository(SampleEmployees.all()),
                 new StandardGrossPayCalculator(),
                 new BandedTaxCalculator(StandardTaxBands.create()),
                 new NoDeductionsCalculator());
