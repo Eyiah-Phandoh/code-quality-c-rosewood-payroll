@@ -22,7 +22,7 @@ class PayrollIntegrationTest {
     void setUp() {
         payrollService = new PayrollService(
                 InMemoryEmployeeRepository.withSampleData(),
-                new GrossPayCalculator(),
+                new StandardGrossPayCalculator(),
                 new BandedTaxCalculator(StandardTaxBands.create()),
                 new NoDeductionsCalculator());
     }

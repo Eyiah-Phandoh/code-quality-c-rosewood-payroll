@@ -5,8 +5,8 @@ import com.amalitech.training.rosewood.payroll.domain.PayrollResult;
 import com.amalitech.training.rosewood.payroll.exception.EmployeeNotFoundException;
 import com.amalitech.training.rosewood.payroll.exception.PayrollException;
 import com.amalitech.training.rosewood.payroll.repository.InMemoryEmployeeRepository;
-import com.amalitech.training.rosewood.payroll.service.GrossPayCalculator;
 import com.amalitech.training.rosewood.payroll.service.PayrollService;
+import com.amalitech.training.rosewood.payroll.service.StandardGrossPayCalculator;
 import com.amalitech.training.rosewood.payroll.tax.BandedTaxCalculator;
 import com.amalitech.training.rosewood.payroll.tax.StandardTaxBands;
 import java.io.PrintStream;
@@ -42,7 +42,7 @@ public final class Demo {
     private static PayrollService createPayrollService() {
         return new PayrollService(
                 InMemoryEmployeeRepository.withSampleData(),
-                new GrossPayCalculator(),
+                new StandardGrossPayCalculator(),
                 new BandedTaxCalculator(StandardTaxBands.create()),
                 new NoDeductionsCalculator());
     }

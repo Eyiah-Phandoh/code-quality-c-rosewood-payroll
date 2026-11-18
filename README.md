@@ -31,7 +31,8 @@ com.amalitech.training.rosewood.payroll
 ├── domain                   Employee, PayrollResult
 ├── money                    Money precision policy
 ├── repository               EmployeeRepository, InMemoryEmployeeRepository
-├── service                  PayrollService, GrossPayCalculator
+├── service                  PayrollService, GrossPayCalculator,
+│                            StandardGrossPayCalculator
 ├── tax                      TaxCalculator, TaxBand, PercentageTaxBand,
 │                            BandedTaxCalculator, StandardTaxBands
 ├── deduction                DeductionCalculator, NoDeductionsCalculator

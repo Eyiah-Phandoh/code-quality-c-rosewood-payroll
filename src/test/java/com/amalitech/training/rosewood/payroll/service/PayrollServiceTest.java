@@ -54,7 +54,7 @@ class PayrollServiceTest {
 
     @BeforeEach
     void setUp() {
-        grossPayCalculator = new GrossPayCalculator();
+        grossPayCalculator = new StandardGrossPayCalculator();
         taxCalculator = new BandedTaxCalculator(StandardTaxBands.create());
         deductionCalculator = new NoDeductionsCalculator();
         payrollService = new PayrollService(

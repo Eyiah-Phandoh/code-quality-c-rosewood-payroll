@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class GrossPayCalculatorTest {
+class StandardGrossPayCalculatorTest {
 
     private GrossPayCalculator calculator;
 
     @BeforeEach
     void setUp() {
-        calculator = new GrossPayCalculator();
+        calculator = new StandardGrossPayCalculator();
     }
 
     @ParameterizedTest(name = "{0} hours at {1} -> {2}")

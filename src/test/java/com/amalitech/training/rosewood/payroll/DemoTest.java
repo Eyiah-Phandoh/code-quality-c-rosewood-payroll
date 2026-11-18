@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.exception.TaxCalculationException;
 import com.amalitech.training.rosewood.payroll.repository.InMemoryEmployeeRepository;
-import com.amalitech.training.rosewood.payroll.service.GrossPayCalculator;
 import com.amalitech.training.rosewood.payroll.service.PayrollService;
+import com.amalitech.training.rosewood.payroll.service.StandardGrossPayCalculator;
 import com.amalitech.training.rosewood.payroll.tax.TaxCalculator;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -50,7 +50,7 @@ class DemoTest {
         };
         PayrollService failingService = new PayrollService(
                 InMemoryEmployeeRepository.withSampleData(),
-                new GrossPayCalculator(),
+                new StandardGrossPayCalculator(),
                 failingTaxCalculator,
                 new NoDeductionsCalculator());
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();

@@ -7,8 +7,8 @@ import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.domain.Employee;
 import com.amalitech.training.rosewood.payroll.domain.PayrollResult;
 import com.amalitech.training.rosewood.payroll.repository.EmployeeRepository;
-import com.amalitech.training.rosewood.payroll.service.GrossPayCalculator;
 import com.amalitech.training.rosewood.payroll.service.PayrollService;
+import com.amalitech.training.rosewood.payroll.service.StandardGrossPayCalculator;
 import com.amalitech.training.rosewood.payroll.support.MinimumGrossTaxBand;
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,7 +35,7 @@ class TaxBandExtensibilityTest {
                 new Employee("e3", "New Band Employee"));
         PayrollService payrollService = new PayrollService(
                 repository,
-                new GrossPayCalculator(),
+                new StandardGrossPayCalculator(),
                 new BandedTaxCalculator(bands),
                 new NoDeductionsCalculator());
 
