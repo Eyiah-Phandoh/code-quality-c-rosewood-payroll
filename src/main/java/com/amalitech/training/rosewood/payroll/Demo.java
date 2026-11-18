@@ -17,6 +17,11 @@ import java.math.BigDecimal;
  */
 public final class Demo {
 
+    private static final BigDecimal REGULAR_HOURS = new BigDecimal("40");
+    private static final BigDecimal REGULAR_HOURLY_RATE = new BigDecimal("20");
+    private static final BigDecimal OVERTIME_HOURS = new BigDecimal("50");
+    private static final BigDecimal OVERTIME_HOURLY_RATE = new BigDecimal("30");
+
     private Demo() {
     }
 
@@ -29,9 +34,9 @@ public final class Demo {
     }
 
     static void run(PrintStream output, PayrollService payrollService) {
-        printPayslip(payrollService, "e1", "40", "20", output);
-        printPayslip(payrollService, "e2", "50", "30", output);
-        printPayslip(payrollService, "unknown", "40", "20", output);
+        printPayslip(payrollService, "e1", REGULAR_HOURS, REGULAR_HOURLY_RATE, output);
+        printPayslip(payrollService, "e2", OVERTIME_HOURS, OVERTIME_HOURLY_RATE, output);
+        printPayslip(payrollService, "unknown", REGULAR_HOURS, REGULAR_HOURLY_RATE, output);
     }
 
     private static PayrollService createPayrollService() {
@@ -45,14 +50,12 @@ public final class Demo {
     private static void printPayslip(
             PayrollService payrollService,
             String employeeId,
-            String hoursWorked,
-            String hourlyRate,
+            BigDecimal hoursWorked,
+            BigDecimal hourlyRate,
             PrintStream output) {
         try {
             PayrollResult result = payrollService.calculatePayroll(
-                    employeeId,
-                    new BigDecimal(hoursWorked),
-                    new BigDecimal(hourlyRate));
+                    employeeId, hoursWorked, hourlyRate);
             output.printf("Employee: %s (%s)%n", result.employeeName(), result.employeeId());
             output.printf("Gross pay: GHS %s%n", result.grossPay());
             output.printf("Tax: GHS %s%n", result.tax());
