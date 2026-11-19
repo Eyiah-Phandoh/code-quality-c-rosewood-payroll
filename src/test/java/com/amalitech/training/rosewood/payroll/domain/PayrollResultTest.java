@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
 import com.amalitech.training.rosewood.payroll.exception.PayrollCalculationException;
 import com.amalitech.training.rosewood.payroll.money.Money;
 import java.math.BigDecimal;
@@ -45,7 +46,7 @@ class PayrollResultTest {
     void rejectsNullAndNegativeHoursAndRate() {
         assertAll(
                 () -> assertThrows(
-                        PayrollCalculationException.class,
+                        InvalidPayrollInputException.class,
                         () -> new PayrollResult(
                                 EMPLOYEE_ID,
                                 EMPLOYEE_NAME,
@@ -55,7 +56,7 @@ class PayrollResultTest {
                                 new BigDecimal("40.00"),
                                 Money.ZERO)),
                 () -> assertThrows(
-                        PayrollCalculationException.class,
+                        InvalidPayrollInputException.class,
                         () -> new PayrollResult(
                                 EMPLOYEE_ID,
                                 EMPLOYEE_NAME,
@@ -65,7 +66,7 @@ class PayrollResultTest {
                                 new BigDecimal("40.00"),
                                 Money.ZERO)),
                 () -> assertThrows(
-                        PayrollCalculationException.class,
+                        InvalidPayrollInputException.class,
                         () -> new PayrollResult(
                                 EMPLOYEE_ID,
                                 EMPLOYEE_NAME,
@@ -75,7 +76,7 @@ class PayrollResultTest {
                                 new BigDecimal("40.00"),
                                 Money.ZERO)),
                 () -> assertThrows(
-                        PayrollCalculationException.class,
+                        InvalidPayrollInputException.class,
                         () -> new PayrollResult(
                                 EMPLOYEE_ID,
                                 EMPLOYEE_NAME,

@@ -1,5 +1,8 @@
 package com.amalitech.training.rosewood.payroll.service;
 
+import static com.amalitech.training.rosewood.payroll.validation.Inputs.requireNonNegative;
+import static com.amalitech.training.rosewood.payroll.validation.Inputs.requireText;
+
 import com.amalitech.training.rosewood.payroll.deduction.DeductionCalculator;
 import com.amalitech.training.rosewood.payroll.domain.Employee;
 import com.amalitech.training.rosewood.payroll.domain.PayrollResult;
@@ -91,19 +94,8 @@ public final class PayrollService {
             String employeeId,
             BigDecimal hoursWorked,
             BigDecimal hourlyRate) {
-        if (employeeId == null || employeeId.isBlank()) {
-            throw new InvalidPayrollInputException("Employee id must not be null or blank");
-        }
+        requireText(employeeId, "Employee id");
         requireNonNegative(hoursWorked, "Hours worked");
         requireNonNegative(hourlyRate, "Hourly rate");
-    }
-
-    private static void requireNonNegative(BigDecimal value, String fieldName) {
-        if (value == null) {
-            throw new InvalidPayrollInputException(fieldName + " must not be null");
-        }
-        if (value.signum() < 0) {
-            throw new InvalidPayrollInputException(fieldName + " must not be negative: " + value);
-        }
     }
 }

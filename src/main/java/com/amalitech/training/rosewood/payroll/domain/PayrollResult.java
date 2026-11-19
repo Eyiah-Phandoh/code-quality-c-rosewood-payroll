@@ -2,6 +2,7 @@ package com.amalitech.training.rosewood.payroll.domain;
 
 import com.amalitech.training.rosewood.payroll.exception.PayrollCalculationException;
 import com.amalitech.training.rosewood.payroll.money.Money;
+import com.amalitech.training.rosewood.payroll.validation.Inputs;
 import java.math.BigDecimal;
 
 /**
@@ -22,8 +23,8 @@ public record PayrollResult(
     public PayrollResult {
         employeeId = requireText(employeeId, "Employee id");
         employeeName = requireText(employeeName, "Employee name");
-        hoursWorked = requireNonNegative(hoursWorked, "Hours worked");
-        hourlyRate = requireNonNegative(hourlyRate, "Hourly rate");
+        hoursWorked = Inputs.requireNonNegative(hoursWorked, "Hours worked");
+        hourlyRate = Inputs.requireNonNegative(hourlyRate, "Hourly rate");
         grossPay = requireMoney(grossPay, "Gross pay");
         tax = requireMoney(tax, "Tax");
         deductions = requireMoney(deductions, "Deductions");

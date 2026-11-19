@@ -1,6 +1,6 @@
 package com.amalitech.training.rosewood.payroll.domain;
 
-import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
+import com.amalitech.training.rosewood.payroll.validation.Inputs;
 
 /**
  * An employee who can be paid by the payroll service.
@@ -11,8 +11,8 @@ public final class Employee {
     private final String name;
 
     public Employee(String id, String name) {
-        this.id = requireText(id, "Employee id");
-        this.name = requireText(name, "Employee name");
+        this.id = Inputs.requireText(id, "Employee id");
+        this.name = Inputs.requireText(name, "Employee name");
     }
 
     public String getId() {
@@ -21,12 +21,5 @@ public final class Employee {
 
     public String getName() {
         return name;
-    }
-
-    private static String requireText(String value, String fieldName) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidPayrollInputException(fieldName + " must not be null or blank");
-        }
-        return value;
     }
 }

@@ -1,6 +1,7 @@
 package com.amalitech.training.rosewood.payroll.service;
 
-import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
+import static com.amalitech.training.rosewood.payroll.validation.Inputs.requireNonNegative;
+
 import com.amalitech.training.rosewood.payroll.money.Money;
 import java.math.BigDecimal;
 
@@ -45,14 +46,5 @@ public final class StandardGrossPayCalculator implements GrossPayCalculator {
                 .multiply(overtimeMultiplier);
 
         return Money.round(regularPay.add(overtimePay));
-    }
-
-    private static void requireNonNegative(BigDecimal value, String fieldName) {
-        if (value == null) {
-            throw new InvalidPayrollInputException(fieldName + " must not be null");
-        }
-        if (value.signum() < 0) {
-            throw new InvalidPayrollInputException(fieldName + " must not be negative: " + value);
-        }
     }
 }

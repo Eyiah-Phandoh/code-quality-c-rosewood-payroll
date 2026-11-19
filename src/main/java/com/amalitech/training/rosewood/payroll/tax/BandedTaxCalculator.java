@@ -1,6 +1,7 @@
 package com.amalitech.training.rosewood.payroll.tax;
 
-import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
+import static com.amalitech.training.rosewood.payroll.validation.Inputs.requireNonNegative;
+
 import com.amalitech.training.rosewood.payroll.exception.TaxCalculationException;
 import com.amalitech.training.rosewood.payroll.money.Money;
 import java.math.BigDecimal;
@@ -39,7 +40,7 @@ public final class BandedTaxCalculator implements TaxCalculator {
 
     @Override
     public BigDecimal calculateTax(BigDecimal grossPay) {
-        requireValidGrossPay(grossPay);
+        requireNonNegative(grossPay, "Gross pay");
 
         return bands.stream()
                 .filter(band -> band.appliesTo(grossPay))
@@ -47,14 +48,5 @@ public final class BandedTaxCalculator implements TaxCalculator {
                 .map(band -> Money.round(band.calculateTax(grossPay)))
                 .orElseThrow(() -> new TaxCalculationException(
                         "No tax band applies to gross pay " + grossPay));
-    }
-
-    private static void requireValidGrossPay(BigDecimal grossPay) {
-        if (grossPay == null) {
-            throw new InvalidPayrollInputException("Gross pay must not be null");
-        }
-        if (grossPay.signum() < 0) {
-            throw new InvalidPayrollInputException("Gross pay must not be negative: " + grossPay);
-        }
     }
 }
