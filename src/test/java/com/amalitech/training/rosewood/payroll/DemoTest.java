@@ -16,8 +16,11 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 class DemoTest {
 
@@ -25,6 +28,8 @@ class DemoTest {
             Logger.getLogger(PayrollService.class.getName());
 
     private static boolean previousUseParentHandlers;
+
+    private PrintStream originalOut;
 
     @BeforeAll
     static void silenceServiceLogs() {
@@ -37,17 +42,21 @@ class DemoTest {
         SERVICE_LOGGER.setUseParentHandlers(previousUseParentHandlers);
     }
 
+    @AfterEach
+    void restoreSystemOut() {
+        if (originalOut != null) {
+            System.setOut(originalOut);
+        }
+    }
+
     @Test
+    @ResourceLock(Resources.SYSTEM_OUT)
     void printsPayslipsAndAnExplicitFailure() {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         PrintStream capture = new PrintStream(bytes, true, StandardCharsets.UTF_8);
-        PrintStream original = System.out;
-        try {
-            System.setOut(capture);
-            PayrollApplication.main(new String[0]);
-        } finally {
-            System.setOut(original);
-        }
+        originalOut = System.out;
+        System.setOut(capture);
+        PayrollApplication.main(new String[0]);
 
         String output = bytes.toString(StandardCharsets.UTF_8);
 
