@@ -70,8 +70,9 @@ public final class PayrollService {
                     grossPay,
                     tax,
                     deductions);
-        } catch (PayrollException exception) {
-            throw exception;
+        } catch (PayrollException payrollFailure) {
+            // Domain failures already carry context; wrapping them would change the contract.
+            throw payrollFailure;
         } catch (RuntimeException exception) {
             throw new PayrollCalculationException(
                     "Could not calculate payroll for employee " + employeeId, exception);
