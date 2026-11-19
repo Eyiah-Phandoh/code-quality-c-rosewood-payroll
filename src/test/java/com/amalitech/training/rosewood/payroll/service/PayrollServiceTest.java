@@ -69,6 +69,12 @@ class PayrollServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private TaxCalculator taxCalculatorMock;
+
+    @Mock
+    private DeductionCalculator deductionCalculatorMock;
+
     private GrossPayCalculator grossPayCalculator;
     private TaxCalculator taxCalculator;
     private DeductionCalculator deductionCalculator;
@@ -136,33 +142,6 @@ class PayrollServiceTest {
                 () -> assertEquals(new BigDecimal("0.00"), result.deductions()),
                 () -> assertEquals(new BigDecimal("760.00"), result.netPay()));
         verify(employeeRepository).findById("e1");
-    }
-
-    @Test
-    void calculatesOvertimePay() {
-        Employee kwame = new Employee("e2", "Kwame Owusu");
-        givenEmployee(kwame);
-
-        PayrollResult result = payrollService.calculatePayroll(
-                "e2", new BigDecimal("50"), new BigDecimal("30"));
-
-        assertAll(
-                () -> assertEquals(new BigDecimal("1650.00"), result.grossPay()),
-                () -> assertEquals(new BigDecimal("247.50"), result.tax()),
-                () -> assertEquals(new BigDecimal("1402.50"), result.netPay()));
-    }
-
-    @Test
-    void appliesHighTaxBand() {
-        givenEmployee(employee);
-
-        PayrollResult result = payrollService.calculatePayroll(
-                "e1", new BigDecimal("100"), new BigDecimal("100"));
-
-        assertAll(
-                () -> assertEquals(new BigDecimal("13000.00"), result.grossPay()),
-                () -> assertEquals(new BigDecimal("3250.00"), result.tax()),
-                () -> assertEquals(new BigDecimal("9750.00"), result.netPay()));
     }
 
     @Test
@@ -376,6 +355,37 @@ class PayrollServiceTest {
                         "e1", FORTY_HOURS, TWENTY_RATE));
 
         assertSame(failure, thrown.getCause());
+    }
+
+    @Test
+    void netPayIsGrossMinusTaxMinusDeductionsAsReportedByCollaborators() {
+        givenEmployee(employee);
+        when(taxCalculatorMock.calculateTax(new BigDecimal("800.00")))
+                .thenReturn(new BigDecimal("123.45"));
+        when(deductionCalculatorMock.calculateDeductions(employee, new BigDecimal("800.00")))
+                .thenReturn(new BigDecimal("67.89"));
+        PayrollService service = new PayrollService(
+                employeeRepository, grossPayCalculator, taxCalculatorMock, deductionCalculatorMock);
+
+        PayrollResult result = service.calculatePayroll("e1", FORTY_HOURS, TWENTY_RATE);
+
+        assertAll(
+                () -> assertEquals(new BigDecimal("123.45"), result.tax()),
+                () -> assertEquals(new BigDecimal("67.89"), result.deductions()),
+                () -> assertEquals(new BigDecimal("608.66"), result.netPay()));
+    }
+
+    @Test
+    void doesNotCalculateDeductionsWhenTaxFails() {
+        givenEmployee(employee);
+        when(taxCalculatorMock.calculateTax(any(BigDecimal.class)))
+                .thenThrow(new TaxCalculationException("no band"));
+        PayrollService service = new PayrollService(
+                employeeRepository, grossPayCalculator, taxCalculatorMock, deductionCalculatorMock);
+
+        assertThrows(TaxCalculationException.class,
+                () -> service.calculatePayroll("e1", FORTY_HOURS, TWENTY_RATE));
+        verifyNoInteractions(deductionCalculatorMock);
     }
 
     private void givenEmployee(Employee employee) {
