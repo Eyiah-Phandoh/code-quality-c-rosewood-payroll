@@ -111,8 +111,8 @@ running it.
 
 Current verification (PIT run on JDK 21):
 
-- **91 tests**, 0 failures, 0 errors.
-- **100% line and branch coverage** across production classes: **209/209 lines, 76/76 branches**.
+- **2105 tests**, 0 failures, 0 errors.
+- **100% line and branch coverage** across production classes: **218/218 lines, 78/78 branches**.
 - PIT: **89 mutations, 89 killed (100%)**, test strength **100%**, with **zero uncovered mutations**.
 
 Running PIT on JDK 25 produces misleading no-coverage entries because PIT 1.16.1 cannot instrument

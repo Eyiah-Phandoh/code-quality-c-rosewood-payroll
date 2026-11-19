@@ -177,7 +177,7 @@ independently derived expected values.
 | Introduce a focused unchecked exception hierarchy: `PayrollException`, `InvalidPayrollInputException`, `EmployeeNotFoundException`, `EmployeeRepositoryException`, `PayrollCalculationException`, `TaxCalculationException` | `§6.1` and `§6.3`: failures are explicit, carry context, and preserve causes. Unchecked exceptions keep the service API usable without meaningless `throws` clauses |
 | Use `NoDeductionsCalculator` as the production default | The repository defines no deduction policy. Inventing rates would violate the brief. The abstraction and tests demonstrate how a real policy would be added |
 | Keep `Employee` and the in-memory repository concept; make repository data configurable and add an explicit sample-data factory | Avoids a rewrite while removing hidden configuration and making the repository testable |
-| Update `Demo` to wire the concrete implementations and report a missing employee explicitly | Presentation belongs at the composition root (`§4.4`); the demo must not present failure as `0.0` |
+| Extract a composition root (PayrollApplication) and keep Demo as CLI presentation | Wiring belongs in one place (§4.4); the demo must not present failure as 0.0 |
 
 ### 4.2 How the design absorbs the coming tax band
 
@@ -206,9 +206,10 @@ the design does not force every rule into a percentage-shaped class.
 | `EmployeeRepository` | **Kept as an interface**, refactored to `Optional<Employee>` | Preserves the abstraction while making the missing-employee contract explicit |
 | `InMemoryEmployeeRepository` | **Kept**, made configurable, with an explicit sample-data factory | Preserves the in-memory implementation and demo data without hiding configuration |
 | `PayrollCalculator` | **Fixed by splitting**, not rewritten from scratch | The payroll rules are correct in principle; the class has too many responsibilities and unsafe failure behaviour |
+| GrossPayCalculator | **Extracted to an interface**, implemented by StandardGrossPayCalculator | Overtime policy is now a replaceable dependency |
 | Gross/overtime formula | **Preserved** | Existing business policy (`40` hours, `1.5×` overtime) |
 | Tax rates and thresholds | **Preserved** | Existing business policy (`5% / 15% / 25%`; `1000 / 5000`) |
-| `Demo` | **Fixed** | Must use injected composition and report missing employees instead of printing `0.0` |
+| Demo | **Split** | Presentation stays in Demo; wiring moved to PayrollApplication, which also reports missing employees explicitly instead of printing 0.0 |
 | `PayrollCalculatorTest.calculatesNetPay` | **Replaced** | Assertion was too weak to detect a wrong result |
 | `PayrollCalculatorTest.calculatesOvertimePay` | **Removed and replaced** | Self-mock was tautological |
 | `PayrollCalculatorTest.returnsPayForAnEmployee` | **Removed and replaced** | `assertNotNull` on a primitive can never fail |
@@ -241,9 +242,9 @@ The following checks produced the evidence in this document:
    test strength 27%.
 7. Used the AmaliTech standard to map each finding to a specific section.
 
-### 4.6 Verification planned after implementation
+### 4.6 Verification performed
 
-The implementation will not be claimed as complete until these checks have actually run:
+These checks were run against the final code; results are in the README "Quality checks" section:
 
 - `mvn clean test` — all unit and integration tests.
 - `mvn verify` — compilation, tests, and JaCoCo report.
@@ -254,7 +255,7 @@ The implementation will not be claimed as complete until these checks have actua
   `PayrollService`.
 - A final `git diff` review to confirm no unrelated files or user changes were overwritten.
 
-### 4.7 Decisions requiring reviewer sign-off
+### 4.7 Decisions recorded for reviewer sign-off
 
 1. **Rounding:** scale 2, `HALF_UP`, applied to gross, tax, and deductions; net derived. This
    preserves the demo values `760.00` and `1402.50`.
