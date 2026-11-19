@@ -1,7 +1,7 @@
 package com.amalitech.training.rosewood.payroll;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
+@ResourceLock(Resources.SYSTEM_OUT)
 class DemoTest {
 
     private static final Logger SERVICE_LOGGER =
@@ -50,7 +51,6 @@ class DemoTest {
     }
 
     @Test
-    @ResourceLock(Resources.SYSTEM_OUT)
     void printsPayslipsAndAnExplicitFailure() {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         PrintStream capture = new PrintStream(bytes, true, StandardCharsets.UTF_8);
@@ -60,16 +60,23 @@ class DemoTest {
 
         String output = bytes.toString(StandardCharsets.UTF_8);
 
-        assertAll(
-                () -> assertTrue(output.contains("Employee: Efua Sarpong (e1)")),
-                () -> assertTrue(output.contains("Gross pay: GHS 800.00")),
-                () -> assertTrue(output.contains("Tax: GHS 40.00")),
-                () -> assertTrue(output.contains("Deductions: GHS 0.00")),
-                () -> assertTrue(output.contains("Net pay: GHS 760.00")),
-                () -> assertTrue(output.contains("Net pay: GHS 1402.50")),
-                () -> assertTrue(output.contains(
-                        "Payroll failed: Employee not found: unknown")),
-                () -> assertFalse(output.contains("Net pay: GHS 0.00")));
+        String expected = """
+                Employee: Efua Sarpong (e1)
+                Gross pay: GHS 800.00
+                Tax: GHS 40.00
+                Deductions: GHS 0.00
+                Net pay: GHS 760.00
+
+                Employee: Kwame Owusu (e2)
+                Gross pay: GHS 1650.00
+                Tax: GHS 247.50
+                Deductions: GHS 0.00
+                Net pay: GHS 1402.50
+
+                Payroll failed: Employee not found: unknown
+
+                """.replace("\n", System.lineSeparator());
+        assertEquals(expected, output);
     }
 
     @Test

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amalitech.training.rosewood.payroll.domain.Employee;
 import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
 import com.amalitech.training.rosewood.payroll.support.SampleEmployees;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +43,14 @@ class InMemoryEmployeeRepositoryTest {
                         "Custom Employee",
                         repository.findById("custom").orElseThrow().getName()),
                 () -> assertFalse(repository.findById("e1").isPresent()));
+    }
+
+    @Test
+    void ignoresLaterChangesToTheSuppliedList() {
+        List<Employee> source = new ArrayList<>(List.of(new Employee("e1", "First")));
+        InMemoryEmployeeRepository repository = new InMemoryEmployeeRepository(source);
+        source.add(new Employee("e9", "Late"));
+        assertTrue(repository.findById("e9").isEmpty());
     }
 
     @Test

@@ -184,6 +184,16 @@ class BandedTaxCalculatorTest {
     }
 
     @Test
+    void documentsTheInheritedTaxCliffAtThePolicyBoundaries() {
+        BigDecimal below = new BigDecimal("999.99");
+        BigDecimal at = new BigDecimal("1000");
+        BigDecimal netBelow = below.subtract(calculator.calculateTax(below));   // 949.99
+        BigDecimal netAt = at.subtract(calculator.calculateTax(at));            // 850.00
+        assertTrue(netAt.compareTo(netBelow) < 0,
+                "Flat-rate-on-whole-gross policy: earning more at the threshold pays less net");
+    }
+
+    @Test
     void supportsACustomBandThroughTheSameAbstraction() {
         TaxBand flatBand = new TaxBand() {
             @Override
