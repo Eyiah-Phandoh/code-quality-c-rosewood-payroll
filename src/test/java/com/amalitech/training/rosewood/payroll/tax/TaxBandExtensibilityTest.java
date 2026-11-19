@@ -3,6 +3,9 @@ package com.amalitech.training.rosewood.payroll.tax;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.domain.Employee;
@@ -32,8 +35,9 @@ class TaxBandExtensibilityTest {
                         "HIGH_BAND", new BigDecimal("10000"), new BigDecimal("0.25")),
                 newBand);
 
-        EmployeeRepository repository = id -> Optional.of(
-                new Employee("e3", "New Band Employee"));
+        EmployeeRepository repository = mock(EmployeeRepository.class);
+        when(repository.findById("e3")).thenReturn(Optional.of(
+                new Employee("e3", "New Band Employee")));
         PayrollService payrollService = new PayrollService(
                 repository,
                 new StandardGrossPayCalculator(),
@@ -48,5 +52,6 @@ class TaxBandExtensibilityTest {
                 () -> assertEquals(new BigDecimal("4800.00"), result.tax()),
                 () -> assertEquals(new BigDecimal("11200.00"), result.netPay()),
                 () -> assertTrue(newBand.isUnbounded()));
+        verify(repository).findById("e3");
     }
 }
