@@ -26,8 +26,16 @@ import com.amalitech.training.rosewood.payroll.tax.BandedTaxCalculator;
 import com.amalitech.training.rosewood.payroll.tax.StandardTaxBands;
 import com.amalitech.training.rosewood.payroll.tax.TaxCalculator;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +50,21 @@ class PayrollServiceTest {
 
     private static final BigDecimal FORTY_HOURS = new BigDecimal("40");
     private static final BigDecimal TWENTY_RATE = new BigDecimal("20");
+    private static final Logger SERVICE_LOGGER =
+            Logger.getLogger(PayrollService.class.getName());
+
+    private static boolean previousUseParentHandlers;
+
+    @BeforeAll
+    static void silenceServiceLogs() {
+        previousUseParentHandlers = SERVICE_LOGGER.getUseParentHandlers();
+        SERVICE_LOGGER.setUseParentHandlers(false);
+    }
+
+    @AfterAll
+    static void restoreServiceLogs() {
+        SERVICE_LOGGER.setUseParentHandlers(previousUseParentHandlers);
+    }
 
     @Mock
     private EmployeeRepository employeeRepository;
@@ -212,6 +235,49 @@ class PayrollServiceTest {
                 () -> assertSame(failure, thrown.getCause()),
                 () -> assertTrue(thrown.getMessage().contains("e1")));
         verify(employeeRepository).findById("e1");
+    }
+
+    @Test
+    void logsUnexpectedFailuresWithEmployeeContextAndCause() {
+        IllegalStateException failure = new IllegalStateException("database offline");
+        when(employeeRepository.findById("e1")).thenThrow(failure);
+        Logger logger = SERVICE_LOGGER;
+        List<LogRecord> records = new ArrayList<>();
+        Handler handler = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                records.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+        boolean previousUseParentHandlers = logger.getUseParentHandlers();
+        Level previousLevel = logger.getLevel();
+        logger.setUseParentHandlers(false);
+        logger.setLevel(Level.SEVERE);
+        logger.addHandler(handler);
+        try {
+            assertThrows(
+                    PayrollCalculationException.class,
+                    () -> payrollService.calculatePayroll("e1", FORTY_HOURS, TWENTY_RATE));
+        } finally {
+            logger.removeHandler(handler);
+            logger.setUseParentHandlers(previousUseParentHandlers);
+            logger.setLevel(previousLevel);
+        }
+
+        assertEquals(1, records.size());
+        LogRecord record = records.getFirst();
+        assertAll(
+                () -> assertEquals(Level.SEVERE, record.getLevel()),
+                () -> assertTrue(record.getMessage().contains("e1")),
+                () -> assertSame(failure, record.getThrown()));
     }
 
     @Test

@@ -11,11 +11,15 @@ import com.amalitech.training.rosewood.payroll.repository.EmployeeRepository;
 import com.amalitech.training.rosewood.payroll.tax.TaxCalculator;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Orchestrates a payroll calculation from validated input to an auditable result.
  */
 public final class PayrollService {
+
+    private static final Logger LOGGER = Logger.getLogger(PayrollService.class.getName());
 
     private final EmployeeRepository employeeRepository;
     private final GrossPayCalculator grossPayCalculator;
@@ -74,6 +78,10 @@ public final class PayrollService {
             // Domain failures already carry context; wrapping them would change the contract.
             throw payrollFailure;
         } catch (RuntimeException exception) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Unexpected payroll failure for employee " + employeeId,
+                    exception);
             throw new PayrollCalculationException(
                     "Could not calculate payroll for employee " + employeeId, exception);
         }
