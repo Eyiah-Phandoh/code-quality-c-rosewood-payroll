@@ -47,8 +47,30 @@ class StandardGrossPayCalculatorTest {
     }
 
     @Test
-    void rejectsNullInputs() {
+    void appliesAnInjectedOvertimePolicy() {
+        StandardGrossPayCalculator doubleTimeAfter35 =
+                new StandardGrossPayCalculator(new BigDecimal("35"), new BigDecimal("2"));
+
+        assertEquals(
+                new BigDecimal("900.00"),
+                doubleTimeAfter35.calculate(new BigDecimal("40"), new BigDecimal("20")));
+    }
+
+    @Test
+    void rejectsAnInvalidOvertimePolicy() {
         assertAll(
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new StandardGrossPayCalculator(BigDecimal.ZERO, new BigDecimal("1.5"))),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new StandardGrossPayCalculator(null, new BigDecimal("1.5"))),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new StandardGrossPayCalculator(new BigDecimal("40"), new BigDecimal("0.99"))),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new StandardGrossPayCalculator(new BigDecimal("40"), null)));
+    }
+
+    @Test
+    void rejectsNullInputs() {        assertAll(
                 () -> assertThrows(
                         InvalidPayrollInputException.class,
                         () -> calculator.calculate(null, new BigDecimal("20"))),
