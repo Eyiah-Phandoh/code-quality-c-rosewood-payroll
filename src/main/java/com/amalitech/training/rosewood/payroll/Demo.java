@@ -43,10 +43,18 @@ public final class Demo {
         } catch (EmployeeNotFoundException exception) {
             output.printf("Payroll failed: %s%n%n", exception.getMessage());
         } catch (PayrollException exception) {
-            output.printf(
-                    "Payroll failed for employee %s: %s%n%n",
-                    employeeId,
-                    exception.getMessage());
+            printFailure(output, employeeId, exception);
         }
+    }
+
+    private static void printFailure(
+            PrintStream output, String employeeId, PayrollException failure) {
+        output.printf(
+                "Payroll failed for employee %s: %s%n", employeeId, failure.getMessage());
+        Throwable cause = failure.getCause();
+        if (cause != null) {
+            output.printf("Caused by: %s%n", cause);
+        }
+        output.println();
     }
 }
