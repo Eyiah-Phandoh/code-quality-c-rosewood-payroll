@@ -176,7 +176,7 @@ independently derived expected values.
 | Derive `netPay()` inside `PayrollResult` and enforce `tax + deductions ≤ gross` | A payslip cannot report a net value that disagrees with its own components; negative net pay is rejected as a calculation failure |
 | Introduce a focused unchecked exception hierarchy: `PayrollException`, `InvalidPayrollInputException`, `EmployeeNotFoundException`, `EmployeeRepositoryException`, `PayrollCalculationException`, `TaxCalculationException` | `§6.1` and `§6.3`: failures are explicit, carry context, and preserve causes. Unchecked exceptions keep the service API usable without meaningless `throws` clauses |
 | Use `NoDeductionsCalculator` as the production default | The repository defines no deduction policy. Inventing rates would violate the brief. The abstraction and tests demonstrate how a real policy would be added |
-| Keep `Employee` and the in-memory repository concept; make repository data configurable and add an explicit sample-data factory | Avoids a rewrite while removing hidden configuration and making the repository testable |
+| Keep `Employee` and the in-memory repository concept; make repository data configurable through its constructor| Avoids a rewrite while removing hidden configuration; sample employees now live in `PayrollApplication`, the composition root |
 | Extract a composition root (PayrollApplication) and keep Demo as CLI presentation | Wiring belongs in one place (§4.4); the demo must not present failure as 0.0 |
 
 ### 4.2 How the design absorbs the coming tax band
