@@ -13,6 +13,8 @@ public interface EmployeeRepository {
      *
      * @param id the employee identifier; must not be null
      * @return the matching employee, or an empty optional when no employee has that identifier
+     * @throws com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException
+     *         when the identifier is null
      */
     Optional<Employee> findById(String id);
 }

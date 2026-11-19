@@ -1,7 +1,7 @@
 package com.amalitech.training.rosewood.payroll.repository;
 
 import com.amalitech.training.rosewood.payroll.domain.Employee;
-import com.amalitech.training.rosewood.payroll.exception.EmployeeRepositoryException;
+import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public final class InMemoryEmployeeRepository implements EmployeeRepository {
     @Override
     public Optional<Employee> findById(String id) {
         if (id == null) {
-            throw new EmployeeRepositoryException("Employee id must not be null");
+            throw new InvalidPayrollInputException("Employee id must not be null");
         }
         return Optional.ofNullable(employees.get(id));
     }

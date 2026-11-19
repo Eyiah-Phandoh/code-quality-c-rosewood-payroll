@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amalitech.training.rosewood.payroll.domain.Employee;
-import com.amalitech.training.rosewood.payroll.exception.EmployeeRepositoryException;
+import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
 import com.amalitech.training.rosewood.payroll.support.SampleEmployees;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -69,7 +69,7 @@ class InMemoryEmployeeRepositoryTest {
     void rejectsNullLookupId() {
         InMemoryEmployeeRepository repository = repositoryWithEmployees();
 
-        assertThrows(EmployeeRepositoryException.class, () -> repository.findById(null));
+        assertThrows(InvalidPayrollInputException.class, () -> repository.findById(null));
     }
 
     private static InMemoryEmployeeRepository repositoryWithEmployees() {
