@@ -112,8 +112,11 @@ running it.
 Current verification (PIT run on JDK 21):
 
 - **2105 tests**, 0 failures, 0 errors.
-- **100% line and branch coverage** across production classes: **218/218 lines, 78/78 branches**.
-- PIT: **89 mutations, 89 killed (100%)**, test strength **100%**, with **zero uncovered mutations**.
+- **100% line and branch coverage** across production classes: **218/218 lines, 78/78 branches**
+  (JaCoCo, enforced at 1.00 by the build).
+- PIT: **89 mutations generated, 89 killed (100%)**, **0 survived**, **0 with no coverage**, test
+  strength **100%**. PIT's own line-coverage figure for mutated classes is **203/213 (95%)**; this
+  uses PIT's line accounting rather than JaCoCo's and is not the enforced coverage gate.
 
 Running PIT on JDK 25 produces misleading no-coverage entries because PIT 1.16.1 cannot instrument
 the newer class-file version. That is a tooling limitation, not an untested presentation class.
