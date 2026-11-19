@@ -3,6 +3,7 @@ package com.amalitech.training.rosewood.payroll.service;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.domain.PayrollResult;
@@ -66,9 +67,13 @@ class PayrollIntegrationTest {
 
     @Test
     void failsForUnknownEmployeeInsteadOfReturningZero() {
-        assertThrows(
+        EmployeeNotFoundException exception = assertThrows(
                 EmployeeNotFoundException.class,
                 () -> payrollService.calculatePayroll(
                         "unknown", new BigDecimal("40"), new BigDecimal("20")));
+
+        assertAll(
+                () -> assertEquals("unknown", exception.getEmployeeId()),
+                () -> assertTrue(exception.getMessage().contains("unknown")));
     }
 }
