@@ -262,7 +262,8 @@ class PayrollServiceTest {
     @Test
     void propagatesTaxCalculationFailures() {
         TaxCalculator failingTaxCalculator = mock(TaxCalculator.class);
-        TaxCalculationException failure = new TaxCalculationException("no tax band applies");
+        TaxCalculationException failure = new TaxCalculationException(
+                "no tax band applies", new IllegalStateException("bands misconfigured"));
         when(failingTaxCalculator.calculateTax(any(BigDecimal.class))).thenThrow(failure);
         PayrollService serviceWithFailingTax = new PayrollService(
                 employeeRepository,
@@ -276,7 +277,9 @@ class PayrollServiceTest {
                 () -> serviceWithFailingTax.calculatePayroll(
                         "e1", FORTY_HOURS, TWENTY_RATE));
 
-        assertSame(failure, thrown);
+        assertAll(
+                () -> assertSame(failure, thrown),
+                () -> assertSame(failure.getCause(), thrown.getCause()));
         verify(failingTaxCalculator).calculateTax(new BigDecimal("800.00"));
     }
 

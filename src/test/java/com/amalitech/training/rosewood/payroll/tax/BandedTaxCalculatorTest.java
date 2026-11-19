@@ -2,6 +2,8 @@ package com.amalitech.training.rosewood.payroll.tax;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -103,6 +105,22 @@ class BandedTaxCalculatorTest {
     }
 
     @Test
+    void rejectsBandsWithEqualUpperBounds() {
+        TaxBand first = new PercentageTaxBand(
+                "FIRST", new BigDecimal("5000"), new BigDecimal("0.15"));
+        TaxBand second = new PercentageTaxBand(
+                "SECOND", new BigDecimal("5000"), new BigDecimal("0.20"));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new BandedTaxCalculator(List.of(first, second)));
+
+        assertEquals(
+                "Tax bands must have strictly increasing upper bounds: FIRST",
+                exception.getMessage());
+    }
+
+    @Test
     void acceptsAnUnboundedBandAsTheLastBand() {
         TaxBand boundedBand = new PercentageTaxBand(
                 "LOW", new BigDecimal("1000"), new BigDecimal("0.05"));
@@ -191,6 +209,36 @@ class BandedTaxCalculatorTest {
         BigDecimal netAt = at.subtract(calculator.calculateTax(at));            // 850.00
         assertTrue(netAt.compareTo(netBelow) < 0,
                 "Flat-rate-on-whole-gross policy: earning more at the threshold pays less net");
+    }
+
+    @Test
+    void acceptsACustomBandWithDefaultHooksBeforeAThresholdBand() {
+        TaxBand customBand = new TaxBand() {
+            @Override
+            public String name() {
+                return "CUSTOM";
+            }
+
+            @Override
+            public boolean appliesTo(BigDecimal grossPay) {
+                return grossPay.compareTo(new BigDecimal("1000")) >= 0;
+            }
+
+            @Override
+            public BigDecimal calculateTax(BigDecimal grossPay) {
+                return new BigDecimal("500");
+            }
+        };
+        TaxBand fallback = new PercentageTaxBand("FALLBACK", null, new BigDecimal("0.25"));
+
+        TaxCalculator customCalculator = new BandedTaxCalculator(List.of(customBand, fallback));
+
+        assertAll(
+                () -> assertEquals(
+                        new BigDecimal("500.00"),
+                        customCalculator.calculateTax(new BigDecimal("2000"))),
+                () -> assertFalse(customBand.isUnbounded()),
+                () -> assertNull(customBand.upperBoundExclusive()));
     }
 
     @Test

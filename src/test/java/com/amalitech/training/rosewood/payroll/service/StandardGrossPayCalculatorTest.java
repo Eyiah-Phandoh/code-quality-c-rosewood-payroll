@@ -57,6 +57,16 @@ class StandardGrossPayCalculatorTest {
     }
 
     @Test
+    void acceptsAMultiplierOfExactlyOne() {
+        StandardGrossPayCalculator noOvertimePremium =
+                new StandardGrossPayCalculator(new BigDecimal("40"), BigDecimal.ONE);
+
+        assertEquals(
+                new BigDecimal("1000.00"),
+                noOvertimePremium.calculate(new BigDecimal("50"), new BigDecimal("20")));
+    }
+
+    @Test
     void rejectsAnInvalidOvertimePolicy() {
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class,
