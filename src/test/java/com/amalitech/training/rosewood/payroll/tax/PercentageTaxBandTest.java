@@ -53,7 +53,10 @@ class PercentageTaxBandTest {
         PercentageTaxBand highBand =
                 new PercentageTaxBand("HIGH", null, new BigDecimal("0.25"));
 
-        assertTrue(highBand.appliesTo(new BigDecimal("1000000")));
+        assertAll(
+                () -> assertTrue(highBand.appliesTo(new BigDecimal("1000000"))),
+                () -> assertFalse(lowBand.isUnbounded()),
+                () -> assertTrue(highBand.isUnbounded()));
     }
 
     @Test

@@ -41,9 +41,10 @@ com.amalitech.training.rosewood.payroll
 ```
 
 `PayrollService` receives its collaborators through its constructor. Tax rules are supplied as an
-ordered `List<TaxBand>`; a new band is added without modifying payroll orchestration. The demo's
-sample employees are declared in `PayrollApplication`, so the repository stays free of application
-data.
+ordered `List<TaxBand>`; a new band is added without modifying payroll orchestration. A band with
+no upper bound must be last in that list, and `BandedTaxCalculator` rejects any other position.
+The demo's sample employees are declared in `PayrollApplication`, so the repository stays free of
+application data.
 
 ## Running
 

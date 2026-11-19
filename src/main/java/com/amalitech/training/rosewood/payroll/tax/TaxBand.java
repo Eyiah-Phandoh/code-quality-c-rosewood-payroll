@@ -22,6 +22,15 @@ public interface TaxBand {
     boolean appliesTo(BigDecimal grossPay);
 
     /**
+     * Reports whether this band has no upper bound and therefore matches every larger gross
+     * amount. Such a band would shadow any band after it, so it must be the last entry in an
+     * ordered band list.
+     *
+     * @return true when the band has no upper bound
+     */
+    boolean isUnbounded();
+
+    /**
      * Calculates the exact tax for this band. Rounding is applied by the tax calculator.
      *
      * @param grossPay the non-negative gross amount

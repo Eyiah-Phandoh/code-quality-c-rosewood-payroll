@@ -69,6 +69,35 @@ class BandedTaxCalculatorTest {
     }
 
     @Test
+    void rejectsAnUnboundedBandThatIsNotLast() {
+        TaxBand unboundedBand =
+                new PercentageTaxBand("HIGH", null, new BigDecimal("0.25"));
+        TaxBand boundedBand = new PercentageTaxBand(
+                "LOW", new BigDecimal("1000"), new BigDecimal("0.05"));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new BandedTaxCalculator(List.of(unboundedBand, boundedBand)));
+
+        assertEquals("Only the last tax band may be unbounded: HIGH", exception.getMessage());
+    }
+
+    @Test
+    void acceptsAnUnboundedBandAsTheLastBand() {
+        TaxBand boundedBand = new PercentageTaxBand(
+                "LOW", new BigDecimal("1000"), new BigDecimal("0.05"));
+        TaxBand unboundedBand =
+                new PercentageTaxBand("HIGH", null, new BigDecimal("0.25"));
+
+        TaxCalculator calculatorWithUnboundedLast =
+                new BandedTaxCalculator(List.of(boundedBand, unboundedBand));
+
+        assertEquals(
+                new BigDecimal("2500.00"),
+                calculatorWithUnboundedLast.calculateTax(new BigDecimal("10000")));
+    }
+
+    @Test
     void rejectsNullAndNegativeGrossPay() {
         assertAll(
                 () -> assertThrows(
@@ -89,6 +118,11 @@ class BandedTaxCalculatorTest {
 
             @Override
             public boolean appliesTo(BigDecimal grossPay) {
+                return true;
+            }
+
+            @Override
+            public boolean isUnbounded() {
                 return true;
             }
 
@@ -120,6 +154,11 @@ class BandedTaxCalculatorTest {
             @Override
             public boolean appliesTo(BigDecimal grossPay) {
                 return grossPay.compareTo(new BigDecimal("10000")) >= 0;
+            }
+
+            @Override
+            public boolean isUnbounded() {
+                return true;
             }
 
             @Override

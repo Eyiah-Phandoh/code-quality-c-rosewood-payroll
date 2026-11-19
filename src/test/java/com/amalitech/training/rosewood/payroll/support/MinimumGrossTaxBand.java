@@ -33,6 +33,11 @@ public final class MinimumGrossTaxBand implements TaxBand {
     }
 
     @Override
+    public boolean isUnbounded() {
+        return true;
+    }
+
+    @Override
     public BigDecimal calculateTax(BigDecimal grossPay) {
         return grossPay.multiply(rate);
     }

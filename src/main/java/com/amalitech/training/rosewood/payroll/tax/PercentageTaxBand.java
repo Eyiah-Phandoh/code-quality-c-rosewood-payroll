@@ -31,6 +31,11 @@ public final class PercentageTaxBand implements TaxBand {
     }
 
     @Override
+    public boolean isUnbounded() {
+        return upperBoundExclusive == null;
+    }
+
+    @Override
     public BigDecimal calculateTax(BigDecimal grossPay) {
         requireValidGrossPay(grossPay);
         return grossPay.multiply(rate);

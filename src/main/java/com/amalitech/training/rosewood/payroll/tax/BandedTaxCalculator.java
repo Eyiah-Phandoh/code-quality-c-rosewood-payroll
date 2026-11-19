@@ -21,6 +21,13 @@ public final class BandedTaxCalculator implements TaxCalculator {
         if (bands.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Tax bands must not contain null");
         }
+        for (int index = 0; index < bands.size() - 1; index++) {
+            TaxBand band = bands.get(index);
+            if (band.isUnbounded()) {
+                throw new IllegalArgumentException(
+                        "Only the last tax band may be unbounded: " + band.name());
+            }
+        }
         this.bands = List.copyOf(bands);
     }
 

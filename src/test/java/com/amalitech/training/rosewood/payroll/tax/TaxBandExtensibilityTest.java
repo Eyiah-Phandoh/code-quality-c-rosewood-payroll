@@ -2,6 +2,7 @@ package com.amalitech.training.rosewood.payroll.tax;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amalitech.training.rosewood.payroll.deduction.NoDeductionsCalculator;
 import com.amalitech.training.rosewood.payroll.domain.Employee;
@@ -45,6 +46,7 @@ class TaxBandExtensibilityTest {
         assertAll(
                 () -> assertEquals(new BigDecimal("16000.00"), result.grossPay()),
                 () -> assertEquals(new BigDecimal("4800.00"), result.tax()),
-                () -> assertEquals(new BigDecimal("11200.00"), result.netPay()));
+                () -> assertEquals(new BigDecimal("11200.00"), result.netPay()),
+                () -> assertTrue(newBand.isUnbounded()));
     }
 }
