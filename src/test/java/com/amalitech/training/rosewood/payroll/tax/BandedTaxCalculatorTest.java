@@ -3,6 +3,10 @@ package com.amalitech.training.rosewood.payroll.tax;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.amalitech.training.rosewood.payroll.exception.InvalidPayrollInputException;
 import com.amalitech.training.rosewood.payroll.exception.TaxCalculationException;
@@ -157,6 +161,26 @@ class BandedTaxCalculatorTest {
                 () -> assertThrows(
                         InvalidPayrollInputException.class,
                         () -> permissiveCalculator.calculateTax(new BigDecimal("-0.01"))));
+    }
+
+    @Test
+    void rejectsABandThatReturnsNullOrNegativeTax() {
+        assertAll(
+                () -> assertBrokenBandRejected(null),
+                () -> assertBrokenBandRejected(new BigDecimal("-1")));
+    }
+
+    private static void assertBrokenBandRejected(BigDecimal badTax) {
+        TaxBand broken = mock(TaxBand.class);
+        when(broken.name()).thenReturn("BROKEN");
+        when(broken.appliesTo(any(BigDecimal.class))).thenReturn(true);
+        when(broken.calculateTax(any(BigDecimal.class))).thenReturn(badTax);
+
+        TaxCalculationException exception = assertThrows(
+                TaxCalculationException.class,
+                () -> new BandedTaxCalculator(List.of(broken)).calculateTax(new BigDecimal("100")));
+
+        assertTrue(exception.getMessage().contains("BROKEN"));
     }
 
     @Test

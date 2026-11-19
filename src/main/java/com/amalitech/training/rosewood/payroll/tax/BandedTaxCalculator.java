@@ -45,8 +45,22 @@ public final class BandedTaxCalculator implements TaxCalculator {
         return bands.stream()
                 .filter(band -> band.appliesTo(grossPay))
                 .findFirst()
-                .map(band -> Money.round(band.calculateTax(grossPay)))
+                .map(band -> taxFrom(band, grossPay))
                 .orElseThrow(() -> new TaxCalculationException(
                         "No tax band applies to gross pay " + grossPay));
+    }
+
+    private static BigDecimal taxFrom(TaxBand band, BigDecimal grossPay) {
+        BigDecimal tax = band.calculateTax(grossPay);
+        if (tax == null) {
+            throw new TaxCalculationException(
+                    "Tax band " + band.name() + " returned no tax for gross pay " + grossPay);
+        }
+        if (tax.signum() < 0) {
+            throw new TaxCalculationException(
+                    "Tax band " + band.name() + " returned negative tax " + tax
+                            + " for gross pay " + grossPay);
+        }
+        return Money.round(tax);
     }
 }
