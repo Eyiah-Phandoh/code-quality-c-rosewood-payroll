@@ -28,7 +28,17 @@ public interface TaxBand {
      *
      * @return true when the band has no upper bound
      */
-    boolean isUnbounded();
+    default boolean isUnbounded() {
+        return false;
+    }
+
+    /**
+     * @return the exclusive upper bound, or null when the band is unbounded or not
+     *         threshold-based
+     */
+    default BigDecimal upperBoundExclusive() {
+        return null;
+    }
 
     /**
      * Calculates the exact tax for this band. Rounding is applied by the tax calculator.

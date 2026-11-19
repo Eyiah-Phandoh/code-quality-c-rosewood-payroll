@@ -83,6 +83,22 @@ class BandedTaxCalculatorTest {
     }
 
     @Test
+    void rejectsBoundedBandsInDescendingOrder() {
+        TaxBand medium = new PercentageTaxBand(
+                "MEDIUM", new BigDecimal("5000"), new BigDecimal("0.15"));
+        TaxBand low = new PercentageTaxBand(
+                "LOW", new BigDecimal("1000"), new BigDecimal("0.05"));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new BandedTaxCalculator(List.of(medium, low)));
+
+        assertEquals(
+                "Tax bands must have strictly increasing upper bounds: MEDIUM",
+                exception.getMessage());
+    }
+
+    @Test
     void acceptsAnUnboundedBandAsTheLastBand() {
         TaxBand boundedBand = new PercentageTaxBand(
                 "LOW", new BigDecimal("1000"), new BigDecimal("0.05"));

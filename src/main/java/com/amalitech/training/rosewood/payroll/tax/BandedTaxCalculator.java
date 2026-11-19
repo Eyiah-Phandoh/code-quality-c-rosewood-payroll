@@ -27,6 +27,12 @@ public final class BandedTaxCalculator implements TaxCalculator {
                 throw new IllegalArgumentException(
                         "Only the last tax band may be unbounded: " + band.name());
             }
+            BigDecimal bound = band.upperBoundExclusive();
+            BigDecimal nextBound = bands.get(index + 1).upperBoundExclusive();
+            if (bound != null && nextBound != null && nextBound.compareTo(bound) <= 0) {
+                throw new IllegalArgumentException(
+                        "Tax bands must have strictly increasing upper bounds: " + band.name());
+            }
         }
         this.bands = List.copyOf(bands);
     }
