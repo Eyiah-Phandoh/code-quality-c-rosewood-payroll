@@ -46,6 +46,17 @@ no upper bound must be last in that list, and `BandedTaxCalculator` rejects any 
 The demo's sample employees are declared in `PayrollApplication`, so the repository stays free of
 application data.
 
+## Failure handling
+
+- Null, blank, or negative payroll inputs raise `InvalidPayrollInputException`; a null employee id
+  is rejected the same way at the repository boundary.
+- A missing employee raises `EmployeeNotFoundException` carrying the requested id.
+- Domain failures (`PayrollException` subclasses) propagate unchanged, including storage failures
+  such as `EmployeeRepositoryException`.
+- Unexpected runtime failures are wrapped in `PayrollCalculationException`, logged at `SEVERE`
+  with the employee id, and keep the original exception as their cause. The CLI prints that cause
+  instead of discarding it.
+
 ## Running
 
 Requires JDK 21 or newer and Maven.
@@ -57,9 +68,11 @@ mvn clean test
 Run the demo:
 
 ```bash
-mvn compile
+mvn clean compile
 java -cp target/classes com.amalitech.training.rosewood.payroll.PayrollApplication
 ```
+
+`clean compile` recreates `target/classes`, so the command works after a clean build.
 
 Example output:
 
@@ -85,13 +98,22 @@ Payroll failed: Employee not found: unknown
 mvn verify
 # Coverage report: target/site/jacoco/index.html
 
+# PIT 1.16.1 and its JUnit 5 plugin are configured in pom.xml.
+# Use JDK 21: PIT 1.16.1 cannot instrument newer JDK class files.
 mvn test-compile org.pitest:pitest-maven:mutationCoverage
 # Mutation report: target/pit-reports/index.html
 ```
 
-Current verification:
+The plugin versions are declared as `pitest.version` and `pitest.junit5.version` in `pom.xml`, so
+the fully-qualified goal uses the configured PIT version. Mutation testing is the one step that
+does not run correctly on JDK 25 with PIT 1.16.1; point `JAVA_HOME` at a JDK 21 installation when
+running it.
 
-- **87 tests**, 0 failures, 0 errors.
-- **100% line and branch coverage** across production classes.
-- PIT: **82 mutations, 76 killed (93%)**, test strength **100%**; the six remaining mutations are
-  in the `Demo` presentation class and were not recorded as covered by PIT.
+Current verification (PIT run on JDK 21):
+
+- **91 tests**, 0 failures, 0 errors.
+- **100% line and branch coverage** across production classes: **209/209 lines, 76/76 branches**.
+- PIT: **89 mutations, 89 killed (100%)**, test strength **100%**, with **zero uncovered mutations**.
+
+Running PIT on JDK 25 produces misleading no-coverage entries because PIT 1.16.1 cannot instrument
+the newer class-file version. That is a tooling limitation, not an untested presentation class.
